@@ -4,7 +4,7 @@ import Customer from './components/Customer';
 
 const customer = {
   'name' : '홍길동',
-  'birthday' : '961222',
+  'birthday' : '961222', 
   'gender' : '남자',
   'job' : '대학생'
 }

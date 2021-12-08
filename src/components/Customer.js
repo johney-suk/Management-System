@@ -7,7 +7,7 @@ class Customer extends React.Component {
             <h2>{this.props.name}</h2>
             <p>{this.props.birthday}</p>
             <p>{this.props.gender}</p>
-            <p>{this.props.job}</p>
+            <p>{this.props.job}</p>  
         </div>
         )
     }
