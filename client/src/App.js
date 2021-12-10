@@ -78,7 +78,7 @@ class App extends Component {
                   name={c.name}
                   birthday={c.birthday}
                   gender={c.gender}
-                  job={c.jab}
+                  job={c.job}
                 />
               );
             }) : 
