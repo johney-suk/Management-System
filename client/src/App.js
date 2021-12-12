@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import Customer from './components/Customer';
+import CutomerAdd from './components/CustomerAdd';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
@@ -28,9 +29,26 @@ class App extends Component {
 
   // 비동기적으로 가져온 데이터는 실제로 존재하는 데이터가 아님 
   // 처음 구동된 상태는 customers가 비어있어 오류를 뱉음
-  state = {
-    customers: "",
-    completed: 0
+  // state = {
+  //   customers: "",
+  //   completed: 0
+  // }
+  constructor(props) {
+    super(props);
+    this.state = {
+      customers: '',
+      completed: 0
+    }
+  }
+  
+  stateRefresh = () => {
+    this.setState({
+      customers: '',
+      completed: 0
+    });
+    this.callApi()
+    .then(res => this.setState({ customers: res }))
+    .catch(err => console.log(err));
   }
 
   componentDidMount() {
@@ -55,6 +73,7 @@ class App extends Component {
   render() {
     const { classes } = this.props
     return (
+      <div>
       <Paper className={classes.root}>
         <Table className={classes.table}>
           <TableHead>
@@ -65,13 +84,14 @@ class App extends Component {
               <TableCell>birthday</TableCell>
               <TableCell>gender</TableCell>
               <TableCell>job</TableCell>
+              <TableCell>설정</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
 
             {this.state.customers ? this.state.customers.map(c => {
               return (
-                <Customer
+                <Customer stateRefresh={this.stateRefresh}
                   key={c.id}
                   id={c.id}
                   image={c.image}
@@ -91,6 +111,8 @@ class App extends Component {
           </TableBody>
         </Table>
       </Paper>
+      <CutomerAdd stateRefresh={this.stateRefresh}/>
+      </div>
     );
   }
 }

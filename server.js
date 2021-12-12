@@ -20,48 +20,49 @@ const connection = mysql.createConnection({
 });
 connection.connect();
 
+const multer = require('multer');
+const upload = multer({dest: './upload'})
+
 app.get('/api/customers', (req, res)=> {
     connection.query(
-        "SELECT * FROM CUSTOMER",
+        "SELECT * FROM CUSTOMER WHERE isDeleted = 0",
         (err, rows, fields) => {
             res.send(rows);
         }
     );
 });
+
+app.use('/image', express.static('./upload'));
+
+app.post('/api/customers', upload.single('image'), (req, res)=>{
+    let sql = 'INSERT INTO CUSTOMER VALUES (NULL, ?, ?, ?, ?, ?, now(), 0)';
+    let image = '/image/' + req.file.filename;
+    let name = req.body.name;
+    let birthday = req.body.birthday;
+    let gender = req.body.gender;
+    let job = req.body.job;
+    let params = [image, name, birthday, gender, job];
+    connection.query(sql, params,
+        (err, rows, fields) =>{
+            res.send(rows);
+        })
+    
+})
+
+app.delete('/api/customers/:id', (req,res) =>{
+    let sql = 'UPDATE CUSTOMER SET isDeleted =1 WHERE id = ?';
+    let params = [req.params.id];
+    connection.query(sql, params, 
+        (err, rows, fields) =>{
+            res.send(rows);
+        })
+})
 // app.get('/api/hello', (req, res) => {
 //     res.send({ message: 'Hello express!' });
 // });
 
-app.get('/api/customers', (req, res) => {
-    res.send();
-    // res.send(
-    //     [
-    //     {
-    //       'id': 1, 
-    //       'image': 'https://placeimg.com/64/64/any',
-    //       'name': '석현일',
-    //       'birthday': '950222',
-    //       'gender': '남자',
-    //       'job': '개발자'
-    //     },
-    //     {
-    //       'id': 2,
-    //       'image': 'https://placeimg.com/64/64/2',
-    //       'name': '탐사수',
-    //       'birthday': '950111',
-    //       'gender': '남자',
-    //       'job': '대학생'
-    //     },
-    //     {
-    //       'id': 3,
-    //       'image': 'https://w.namu.la/s/51f656cb58ffc529724fc1f62dc055430f035f937344cda61f6abcfa0e5001e2bc0cd13ae4a192b30962943a5526da6554ae6445388ced9d468e24369ed4b1f716496cefb2ab0cac148ea830d216ba46d82b0a0c33d2f54759c22ea53cb73ba1d1cd07bf3b24a15227412f7deae9425d',
-    //       'name': '피카츄',
-    //       'birthday': '961011',
-    //       'gender': '남자',
-    //       'job': '포켓몬'
-    //     }
-    //   ]
-    // );
-});
+// app.get('/api/customers', (req, res) => {
+//     res.send();
+// });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
